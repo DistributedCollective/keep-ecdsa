@@ -30,6 +30,15 @@ RUN mkdir -p $APP_DIR
 WORKDIR $APP_DIR
 COPY . $APP_DIR/
 
+COPY go.mod $APP_DIR/
+COPY go.sum $APP_DIR/
+
+RUN go mod download
+
+RUN cd /go/pkg/mod/github.com/gogo/protobuf@v1.3.1/protoc-gen-gogoslick && go install .
+RUN cd /go/pkg/mod/github.com/ethereum/go-ethereum@v1.9.10/cmd/abigen && go install .
+
+RUN export PATH=$PATH:$GOPATH/bin && GOOS=linux go generate ./...
 RUN GOOS=linux go build -ldflags "-X main.version=$VERSION -X main.revision=$REVISION" -a -o $APP_NAME ./ && \
 	mv $APP_NAME $BIN_PATH
 
