@@ -7,6 +7,13 @@ GOPRIVATE="keep-network/keep-core"
 KEEP_ETHEREUM_PASSWORD_DEFAULT="password"
 KEEP_CORE_PATH_DEFAULT=$(realpath -m $(dirname $0)/../../keep-core)
 
+if [[ -z "${DEST_NETWORK}" ]]; then
+  echo "DEST_NETWORK env not set. Exiting"
+  exit 1
+else
+  echo "Using network ${DEST_NETWORK}"
+fi
+
 # Read user inputs.
 read -p "Enter ethereum accounts password [$KEEP_ETHEREUM_PASSWORD_DEFAULT]: " ethereum_password
 KEEP_ETHEREUM_PASSWORD=${ethereum_password:-$KEEP_ETHEREUM_PASSWORD_DEFAULT}
@@ -32,12 +39,12 @@ printf "${LOG_START}Installing NPM dependencies...${LOG_END}"
 npm install
 
 printf "${LOG_START}Unlocking ethereum accounts...${LOG_END}"
-# KEEP_ETHEREUM_PASSWORD=$KEEP_ETHEREUM_PASSWORD \
-#     npx truffle exec scripts/unlock-eth-accounts.js --network sov
+KEEP_ETHEREUM_PASSWORD=$KEEP_ETHEREUM_PASSWORD \
+    npx truffle exec scripts/unlock-eth-accounts.js --network $DEST_NETWORK
 
 printf "${LOG_START}Finding current ethereum network ID...${LOG_END}"
 
-output=$(npx truffle exec ./scripts/get-network-id.js --network sov)
+output=$(npx truffle exec ./scripts/get-network-id.js --network $DEST_NETWORK)
 NETWORKID=$(echo "$output" | tail -1)
 printf "Current network ID: ${NETWORKID}\n"
 
@@ -49,7 +56,7 @@ NETWORKID=$NETWORKID \
 printf "${LOG_START}Migrating contracts...${LOG_END}"
 npm run clean
 npx truffle compile
-npx truffle migrate --reset --network sov
+npx truffle migrate --reset --network $DEST_NETWORK
 
 printf "${LOG_START}Building keep-ecdsa client...${LOG_END}"
 cd $KEEP_ECDSA_PATH
