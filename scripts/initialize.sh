@@ -11,6 +11,11 @@ else
   echo "Using network ${DEST_NETWORK}"
 fi
 
+if [[ -z "${INITIALIZE_OPERATORS}" ]]; then
+  echo "INITIALIZE_OPERATORS env not set. Exiting"
+  exit 1
+fi
+
 # Read user config file path.
 read -p "Enter path to keep-ecdsa config files directory [$CONFIG_DIR_PATH_DEFAULT]: " config_dir_path
 CONFIG_DIR_PATH=${config_dir_path:-$CONFIG_DIR_PATH_DEFAULT}
@@ -42,7 +47,10 @@ CLIENT_APP_ADDRESS=$CLIENT_APP_ADDRESS \
     ./scripts/lcl-set-client-address.sh
 
 printf "${LOG_START}Initializing contracts...${LOG_END}"
-npx truffle exec scripts/lcl-initialize.js --network $DEST_NETWORK
+
+if [[ $INITIALIZE_OPERATORS != 0 ]]; then
+  npx truffle exec scripts/lcl-initialize.js --network $DEST_NETWORK
+fi
 
 printf "${LOG_START}Updating keep-ecdsa config files...${LOG_END}"
 for CONFIG_FILE in $KEEP_ECDSA_CONFIG_DIR_PATH/*.toml
