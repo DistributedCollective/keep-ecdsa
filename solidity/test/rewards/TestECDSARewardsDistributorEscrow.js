@@ -55,9 +55,9 @@ describe("ECDSARewardsDistributorEscrow", () => {
   describe("funding", async () => {
     it("can be done from phased escrow", async () => {
       const fundingEscrow = await PhasedEscrow.new(token.address, {from: owner})
-      await token.approveAndCall(fundingEscrow.address, totalRewards, "0x0", {
-        from: owner,
-      })
+
+      await token.approve(fundingEscrow.address, totalRewards, { from: owner })
+      await fundingEscrow.receiveApproval(owner, totalRewards, token.address, "0x0", { from: owner })
 
       const beneficiary = await ECDSARewardsEscrowBeneficiary.new(
         token.address,
@@ -83,9 +83,10 @@ describe("ECDSARewardsDistributorEscrow", () => {
       // another PhasedEscrow, as demonstrated in "funding" describe.
       // This reflects the flow of funds on mainnet for the updated ECDSA
       // staker rewards deployment.
-      await token.approveAndCall(escrow.address, totalRewards, "0x0", {
-        from: owner,
-      })
+
+      await token.approve(escrow.address, totalRewards, { from: owner })
+      await escrow.receiveApproval(owner, totalRewards, token.address, "0x0", { from: owner })
+      
       expect(await token.balanceOf(escrow.address)).to.eq.BN(totalRewards)
     })
 

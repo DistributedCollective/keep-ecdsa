@@ -102,7 +102,7 @@ contract ECDSARewardsDistributor is Ownable {
     /// @param merkleRoot Merkle root for a given interval.
     /// @param amount The amount of KEEP tokens allocated for the merkle root.
     function allocate(bytes32 merkleRoot, uint256 amount) public onlyOwner {
-        token.safeTransferFrom(msg.sender, address(this), amount);
+        token.safeTransferFrom(msg.sender, address(this), amount); //
 
         merkleRoots[merkleRoot] = true;
 

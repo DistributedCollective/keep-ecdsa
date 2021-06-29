@@ -290,14 +290,10 @@ describe("LPRewards", () => {
       const fundingEscrow = await BatchedPhasedEscrow.new(keepToken.address, {
         from: owner,
       })
-      await keepToken.approveAndCall(
-        fundingEscrow.address,
-        totalRewards,
-        "0x0",
-        {
-          from: keepTokenOwner,
-        }
-      )
+
+
+      await keepToken.approve(fundingEscrow.address, totalRewards, { from: keepTokenOwner })
+      await fundingEscrow.receiveApproval(keepTokenOwner, totalRewards, keepToken.address, "0x0", { from: keepTokenOwner }))
 
       // Deploy LP Rewards contracts for each pair.
       const lpReward1 = await LPRewardsTBTCETH.new(

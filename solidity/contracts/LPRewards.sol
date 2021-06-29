@@ -150,7 +150,7 @@ contract LPRewards is
         onlyRewardDistribution
         updateReward(address(0))
     {
-        keepToken.safeTransferFrom(msg.sender, address(this), reward);
+        keepToken.safeTransferFrom(msg.sender, address(this), reward); //
 
         if (block.timestamp >= periodFinish) {
             rewardRate = reward.div(DURATION);
@@ -207,7 +207,7 @@ contract LPRewards is
         uint256 reward = earned(msg.sender);
         if (reward > 0) {
             rewards[msg.sender] = 0;
-            keepToken.safeTransfer(msg.sender, reward);
+            keepToken.safeTransfer(msg.sender, reward); //
             emit RewardPaid(msg.sender, reward);
         }
     }
