@@ -14,9 +14,9 @@
 
 pragma solidity 0.5.17;
 
-import "@keep-network/keep-core/contracts/KeepToken.sol";
 import "@keep-network/keep-core/contracts/TokenStaking.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
 import "openzeppelin-solidity/contracts/cryptography/MerkleProof.sol";
 
@@ -34,9 +34,9 @@ import "openzeppelin-solidity/contracts/cryptography/MerkleProof.sol";
 /// - changed code accordingly to process claimed rewards using a map of merkle
 ///   roots
 contract ECDSARewardsDistributor is Ownable {
-    using SafeERC20 for KeepToken;
+    using SafeERC20 for IERC20;
 
-    KeepToken public token;
+    IERC20 public token;
     TokenStaking public tokenStaking;
 
     // This event is triggered whenever a call to #claim succeeds.
@@ -58,7 +58,7 @@ contract ECDSARewardsDistributor is Ownable {
     mapping(bytes32 => mapping(uint256 => uint256)) private claimedBitMap;
 
     constructor(address _token, address _tokenStaking) public {
-        token = KeepToken(_token);
+        token = IERC20(_token);
         tokenStaking = TokenStaking(_tokenStaking);
     }
 

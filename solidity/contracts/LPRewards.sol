@@ -40,12 +40,12 @@
 
 pragma solidity 0.5.17;
 
-import "@keep-network/keep-core/contracts/KeepToken.sol";
 import "@keep-network/keep-core/contracts/PhasedEscrow.sol";
 
 import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
 
 contract IRewardDistributionRecipient is Ownable {
@@ -108,7 +108,7 @@ contract LPRewards is
     IRewardDistributionRecipient,
     IStakingPoolRewards
 {
-    IERC20 public keepToken;
+    IERC20 public token;
     uint256 public constant DURATION = 7 days;
 
     uint256 public periodFinish = 0;
@@ -123,11 +123,11 @@ contract LPRewards is
     event Withdrawn(address indexed user, uint256 amount);
     event RewardPaid(address indexed user, uint256 reward);
 
-    constructor(IERC20 _keepToken, IERC20 _wrappedToken)
+    constructor(IERC20 _token, IERC20 _wrappedToken)
         public
         LPTokenWrapper(_wrappedToken)
     {
-        keepToken = _keepToken;
+        token = _token;
     }
 
     modifier updateReward(address account) {
@@ -150,7 +150,7 @@ contract LPRewards is
         onlyRewardDistribution
         updateReward(address(0))
     {
-        keepToken.safeTransferFrom(msg.sender, address(this), reward); //
+        token.safeTransferFrom(msg.sender, address(this), reward); //
 
         if (block.timestamp >= periodFinish) {
             rewardRate = reward.div(DURATION);
@@ -207,7 +207,7 @@ contract LPRewards is
         uint256 reward = earned(msg.sender);
         if (reward > 0) {
             rewards[msg.sender] = 0;
-            keepToken.safeTransfer(msg.sender, reward); //
+            token.safeTransfer(msg.sender, reward); //
             emit RewardPaid(msg.sender, reward);
         }
     }
@@ -215,24 +215,24 @@ contract LPRewards is
 
 /// @title KEEP rewards for TBTC-ETH liquidity pool.
 contract LPRewardsTBTCETH is LPRewards {
-    constructor(KeepToken keepToken, IERC20 tbtcEthUniswapPair)
+    constructor(IERC20 token, IERC20 tbtcEthUniswapPair)
         public
-        LPRewards(keepToken, tbtcEthUniswapPair)
+        LPRewards(token, tbtcEthUniswapPair)
     {}
 }
 
 /// @title KEEP rewards for KEEP-ETH liquidity pool.
 contract LPRewardsKEEPETH is LPRewards {
-    constructor(KeepToken keepToken, IERC20 keepEthUniswapPair)
+    constructor(IERC20 token, IERC20 keepEthUniswapPair)
         public
-        LPRewards(keepToken, keepEthUniswapPair)
+        LPRewards(token, keepEthUniswapPair)
     {}
 }
 
 /// @title KEEP rewards for KEEP-TBTC liquidity pool.
 contract LPRewardsKEEPTBTC is LPRewards {
-    constructor(KeepToken keepToken, IERC20 keepTbtcUniswapPair)
+    constructor(IERC20 token, IERC20 keepTbtcUniswapPair)
         public
-        LPRewards(keepToken, keepTbtcUniswapPair)
+        LPRewards(token, keepTbtcUniswapPair)
     {}
 }
