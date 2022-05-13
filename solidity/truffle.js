@@ -40,7 +40,7 @@ module.exports = {
           '3c53f81b6e3da8a4818a33554bfef1eec57d45c252550c8ac1593de6f0148c46',
           '0ab212d7bae1f220699eaa40ec84e97a032382a6c0e42c73b1931eb9474a0e1e',
           '79861b19d809f940b4d91cc8ce42c804c4591b324352f037d831aa3a1fb223c9'],          
-          'wss://testnet.sovryn.app/ws',
+          'wss://testnet.sovryn.app/websocket',
           0, 
           5
         )
